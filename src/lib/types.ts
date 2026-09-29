@@ -1,0 +1,275 @@
+export type Scope = 'team' | 'agent'
+
+/** صف من public.lb_team_standings */
+export interface TeamStanding {
+  team_id: string
+  name: string
+  name_ar: string | null
+  photo_url: string | null
+  year: number
+  quarter: number
+  deals: number
+  target: number
+  members: number
+  pct: number
+  rank: number
+  /** قيادة الفريق: المديرون ثم المشرفون، بترتيب إدخالهم. */
+  leads?: TeamLeadRow[] | null
+}
+
+export interface TeamLeadRow {
+  id: string
+  role: 'manager' | 'supervisor'
+  name: string
+  name_ar: string | null
+  photo_url: string | null
+}
+
+/** صف من public.lb_team_contributions — مساهمة مستشار في فريق بعينه. */
+export interface TeamContribution {
+  team_id: string
+  team: string
+  team_ar: string | null
+  agent_id: string
+  name: string
+  name_ar: string | null
+  photo_url: string | null
+  year: number
+  quarter: number
+  deals: number
+  target: number
+  pct: number
+  rank: number
+}
+
+/** صف من public.lb_agent_standings */
+export interface AgentStanding {
+  agent_id: string
+  name: string
+  name_ar: string | null
+  team: string | null
+  team_ar: string | null
+  photo_url: string | null
+  year: number
+  quarter: number
+  deals: number
+  target: number
+  pct: number
+  rank: number
+}
+
+/** صف من public.lb_rank_history */
+export interface RankHistoryPoint {
+  taken_on: string
+  scope: Scope
+  entity_id: string
+  entity_name: string
+  year: number
+  quarter: number
+  deals: number
+  target: number
+  rank: number
+}
+
+/** صف من public.lb_sale_events */
+export interface SaleEventRow {
+  id: number
+  agent_id: string
+  year: number
+  quarter: number
+  /** sale: زيادة مكتشفة تلقائياً · manual: تهنئة أطلقها مسؤول */
+  kind: 'sale' | 'manual'
+  amount_egp: number
+  total_egp: number
+  note: string | null
+  created_at: string
+  name: string
+  name_ar: string | null
+  photo_url: string | null
+  team: string | null
+  team_ar: string | null
+  /** أغنية مختارة للتهنئة اليدوية؛ null = الأغنية الافتراضية. */
+  song_id: string | null
+  mute: boolean
+  /** مدة خاصة بالثواني؛ null = مدة الإعدادات. */
+  duration_s: number | null
+}
+
+/** صف من public.lb_devices — شاشة أو متصفح فاتح البرنامج */
+export interface DeviceRow {
+  id: string
+  label: string | null
+  user_email: string | null
+  user_agent: string | null
+  screen: string | null
+  view: string | null
+  kiosk: boolean
+  first_seen: string
+  last_seen: string
+  revoked_at: string | null
+  /** تحت المتابعة: سكوتها بيبعت إيميل. */
+  watch: boolean
+  /** وقت بعت تنبيه السكوت — مش null يعني التنبيه اتبعت وما اتكرّرش. */
+  alerted_at: string | null
+}
+
+/** اسم مطوّر أو مشروع اتسجّل قبل كده، للاقتراح عند الإدخال. */
+export interface DealName {
+  kind: 'developer' | 'project'
+  value: string
+  uses: number
+}
+
+/** صف من public.lb_deals — صفقة واحدة بتاريخها ومبلغها */
+export interface DealRow {
+  id: string
+  agent_id: string
+  team_id: string | null
+  /** YYYY-MM-DD */
+  deal_date: string
+  amount_egp: number
+  year: number
+  quarter: number
+  created_at: string
+  name: string
+  name_ar: string | null
+  photo_url: string | null
+  team: string | null
+  team_ar: string | null
+  /** اسم المطوّر العقاري — اختياري. */
+  developer: string | null
+  /** اسم المشروع — اختياري. */
+  project: string | null
+}
+
+/** صف من public.lb_media_files */
+export interface MediaFile {
+  id: string
+  /** song: أغنية احتفال · clip: مقطع قصير للرسائل */
+  kind: 'song' | 'clip'
+  name: string
+  path: string
+  duration_s: number | null
+  size_bytes: number
+  created_at: string
+}
+
+/** صف من public.lb_board_settings */
+export interface BoardSettings {
+  /** نوبة الأخبار شغّالة في التبديل التلقائي. */
+  news_enabled?: boolean
+  /** مدة الخبر الواحد على الشاشة بالثواني. */
+  news_slide_s?: number
+  /** كام مرة يتعاد الخبر الجديد. */
+  news_repeats?: number
+  /** الفاصل بين الإعادات بالدقايق. */
+  news_gap_min?: number
+  /** نغمة التنبيه شغّالة على كل الشاشات. */
+  news_chime?: boolean
+  /** مستوى نغمة التنبيه 0..100. */
+  news_volume?: number
+  /** ملف صوت التنبيه، أو null للنغمة المدمجة. */
+  news_sound_id?: string | null
+  /** سعر الإيداع لليلة واحدة في البنك المركزي المصري. */
+  cbe_deposit?: number | null
+  /** سعر الإقراض لليلة واحدة. */
+  cbe_lending?: number | null
+  /** تاريخ قرار لجنة السياسة النقدية. */
+  cbe_rates_at?: string | null
+  /** إيميل تنبيه الشاشات شغّال. */
+  alerts_enabled?: boolean
+  /** البريد اللي التنبيه بيروحه. */
+  alert_email?: string | null
+  /** الشاشة تسكت كام دقيقة قبل الإيميل. */
+  alert_after_min?: number
+  celebration_seconds: number
+  celebration_song_id: string | null
+  volume: number
+}
+
+/** صف من public.lb_announcements */
+export interface Announcement {
+  id: string
+  style: 'welcome' | 'motivation'
+  title: string
+  body: string | null
+  duration_s: number
+  clip_id: string | null
+  schedule: 'once' | 'daily'
+  starts_at: string | null
+  /** HH:MM بتوقيت القاهرة */
+  daily_time: string | null
+  /** 0 = الأحد … 6 = السبت */
+  weekdays: number[]
+  active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type FeedStatus = 'live' | 'connecting' | 'reconnecting' | 'demo'
+export type BoardView = 'teams' | 'agents' | 'insights' | 'news' | 'markets'
+/** المظهر المطبَّق فعلياً على الصفحة. */
+export type ThemeName = 'daylight' | 'midnight'
+
+/** ما يختاره المستخدم: مظهر ثابت، أو 'auto' ليتبع ساعة اليوم. */
+export type ThemePreference = ThemeName | 'auto'
+export type LocaleName = 'ar' | 'en'
+
+/** عنصر في وسيلة إيضاح الرسم البياني. */
+export interface LegendItem {
+  label: string
+  color: string
+  kind?: 'line' | 'swatch'
+}
+
+/** خبر من مدونة إيفرست، بعد ما السيرفر ينضّفه في /api/news. */
+export interface NewsItem {
+  id: number
+  title: string
+  excerpt: string
+  /** أكبر مقاس متاح — للخبر الرئيسي وشاشة الخبر العاجل. */
+  image: string | null
+  /** مقاس صغير للبطاقات الجانبية. */
+  thumb: string | null
+  date: string
+  slug: string
+  url: string
+}
+
+/** سعر من public /api/markets. */
+export interface MarketQuote {
+  key: string
+  symbol: string
+  group: string
+  /** rate = قرار يتعرض دايماً، وغيره سعر سوق يتعرض لما يتحرّك. */
+  kind?: 'rate'
+  /** نطاق القرار لو ليه حدّين، زي الفيدرالي الأمريكي. */
+  band?: [number, number]
+  /** تاريخ القرار، لأسعار الفائدة. */
+  at?: string
+  currency: string
+  unit?: string
+  price: number
+  prev: number
+  changePct: number
+  /** إغلاقات آخر شهر، لخط الاتجاه الصغير. */
+  spark: number[]
+}
+
+/** صف من public.lb_news_hidden — خبر ممنوع من الشاشات. */
+export interface HiddenNews {
+  post_id: number
+  title: string | null
+  hidden_at: string
+}
+
+/** صف من public.lb_news_casts — خبر اتبعت لكل الشاشات فوراً. */
+export interface NewsCast {
+  id: string
+  post_id: number
+  title: string
+  excerpt: string | null
+  image: string | null
+  url: string | null
+  created_at: string
+}
